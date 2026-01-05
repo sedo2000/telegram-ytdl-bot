@@ -4,38 +4,33 @@ from .downloader import download_video
 import os
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "مرحباً بك! أرسل رابط الفيديو كـ 'رد' (Reply) ثم اختر:\n/mp3 - لتحميل صوت\n/mp4 - لتحميل فيديو"
-    )
+    await update.message.reply_text("أرسل رابط فيديو يوتيوب أولاً، ثم اضغط على:\n/mp3 - للصوت\n/mp4 - للفيديو")
 
 async def mp3(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not update.message.reply_to_message:
-        return await update.message.reply_text("يرجى عمل Reply على رابط الفيديو.")
+    # جلب النص من الرسالة الحالية أو من الرد (Reply)
+    message = update.message.reply_to_message if update.message.reply_to_message else update.message
+    url = message.text
     
-    url = update.message.reply_to_message.text
-    status_msg = await update.message.reply_text("جاري تحويل ومعالجة الصوت... ⏳")
-    
+    status = await update.message.reply_text("جاري معالجة الصوت... ⏳")
     try:
-        path = download_video(url, "bestaudio/best")
-        with open(path, "rb") as audio:
-            await update.message.reply_audio(audio=audio, title="Downloaded Audio")
-        os.remove(path) # حذف الملف لتوفير مساحة Vercel
-        await status_msg.delete()
+        [span_1](start_span)path = download_video(url, "bestaudio/best")[span_1](end_span)
+        with open(path, "rb") as f:
+            await update.message.reply_audio(audio=f)
+        os.remove(path) # حذف الملف بعد الإرسال
+        await status.delete()
     except Exception as e:
-        await update.message.reply_text(f"حدث خطأ: {str(e)}")
+        await update.message.reply_text(f"خطأ: {str(e)}")
 
 async def mp4(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not update.message.reply_to_message:
-        return await update.message.reply_text("يرجى عمل Reply على رابط الفيديو.")
+    message = update.message.reply_to_message if update.message.reply_to_message else update.message
+    url = message.text
     
-    url = update.message.reply_to_message.text
-    status_msg = await update.message.reply_text("جاري تحميل الفيديو... ⏳")
-    
+    status = await update.message.reply_text("جاري تحميل الفيديو... ⏳")
     try:
-        path = download_video(url, "bestvideo+bestaudio/best")
-        with open(path, "rb") as video:
-            await update.message.reply_video(video=video, caption="تم التحميل بواسطة بوتك")
+        [span_2](start_span)path = download_video(url, "bestvideo+bestaudio/best")[span_2](end_span)
+        with open(path, "rb") as f:
+            await update.message.reply_video(video=f)
         os.remove(path)
-        await status_msg.delete()
+        await status.delete()
     except Exception as e:
-        await update.message.reply_text(f"حدث خطأ: {str(e)}")
+        await update.message.reply_text(f"خطأ: {str(e)}")
