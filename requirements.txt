@@ -1,5 +1,6 @@
-python-telegram-bot==20.7
-fastapi
+python-dotenv
 uvicorn
 yt-dlp
-python-dotenv
+fastapi>=0.110
+httpx>=0.27
+beautifulsoup4>=4.12
